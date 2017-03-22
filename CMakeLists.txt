@@ -24,9 +24,13 @@ find_package(CUDA REQUIRED)
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE ON)
 
 
-SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11 --expt-extended-lambda -gencode arch=compute_35,code=sm_35 -gencode arch=compute_52,code=sm_52)
+SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11 --expt-extended-lambda -gencode arch=compute_35,code=sm_35 -gencode arch=compute_52,code=sm_52 -lcurand)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp
+        GraphStruct.cu GraphStruct.h
+        GPUKernels.cu GPUKernels.h
+        GPUMemManager.cu GPUMemManager.h
+        GPUcBFS.cu GPUcBFS.h)
 
 cuda_add_executable(InfluenceMaximizationGPU ${SOURCE_FILES})
 
