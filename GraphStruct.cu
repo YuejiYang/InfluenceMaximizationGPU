@@ -112,9 +112,9 @@ void GraphStruct::writeObjToFile(const char* filename) {
     ofs.write((char*)&this->nodesSize, sizeof(uint32_t));
     ofs.write((char*)&this->edgesListSize, sizeof(uint32_t));
 
+    ofs.write((char*)this->allNodes, sizeof(uint32_t) * this->nodesSize);
     ofs.write((char*)this->edgesList, sizeof(uint64_t) * this->edgesListSize);
     ofs.write((char*)this->edgesProb, sizeof(uint16_t) * this->edgesListSize);
-    //nodetype
 
     ofs.close();
 }
@@ -130,8 +130,8 @@ void GraphStruct::readObjFromFile(const char* filename) {
     this->allNodes = (uint32_t*)malloc(this->nodesSize * sizeof(uint32_t));
     this->edgesList = (uint64_t*)malloc(sizeof(uint64_t) * this->edgesListSize);
     this->edgesProb = (uint16_t*)malloc(sizeof(uint16_t) * this->edgesListSize);
+    ifs.read((char*)this->allNodes, sizeof(uint32_t) * this->nodesSize);
     ifs.read((char*)this->edgesList, sizeof(uint64_t) * this->edgesListSize);
     ifs.read((char*)this->edgesProb, sizeof(uint16_t) * this->edgesListSize);
-
     ifs.close();
 }

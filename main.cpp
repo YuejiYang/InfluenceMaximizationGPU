@@ -18,14 +18,12 @@ int main() {
     gpuMemManager.setNodeListOnDev(1024, 256);
 
 
-
     std::vector<uint32_t> init_bfs;
     std::vector<std::vector<uint32_t>> leaves;
     uint32_t *status_array = NULL;
 
     bool satisfied = false;
     while(!satisfied) {
-
         GPUcBFS::gpucBFS_expansion(init_bfs, gpuMemManager.nodeSize, gpuMemManager.edgeSize,
                                    gpuMemManager.dev_nodeList_raw,
                                    gpuMemManager.dev_edgeList_raw, gpuMemManager.dev_edgeprob_raw, status_array);
