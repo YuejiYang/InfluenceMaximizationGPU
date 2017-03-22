@@ -6,9 +6,9 @@
 int main() {
     //read files
     GraphStruct graphStruct = GraphStruct();
-    graphStruct.readEdgeList("../data/testEdges.txt");
-    graphStruct.readNodes("../data/testNodes.txt");
-    graphStruct.writeObjToFile("../data/testGraph.dat");
+    graphStruct.readEdgeList("../data/edges_with_prob.txt");
+    graphStruct.readNodes("../data/nodes.txt");
+    graphStruct.writeObjToFile("../data/graph.dat");
 
     //graphStruct.readObjFromFile("../data/graph.dat");
 
@@ -44,8 +44,10 @@ int main() {
                                    gpuMemManager.dev_nodeList_raw,
                                    gpuMemManager.dev_edgeList_raw,
                                    gpuMemManager.dev_edgeprob_raw);
+        break;
 
     }
+
 
     return 0;
 }
