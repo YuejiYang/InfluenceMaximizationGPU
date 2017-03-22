@@ -21,11 +21,7 @@
 #include <cstdint>
 #include <curand_kernel.h>
 
-
-#define ALL_01 0x55555555
-#define ALL_10 0xAAAAAAAA
-#define SCORES_LOW_16 0x0000FFFF
-#define HIGH_16 0xFFFF0000
+#define ALL_4F 0xFF
 #define ALL_F 0xFFFFFFFF
 inline
 unsigned long long getTime() {
@@ -85,16 +81,16 @@ namespace GPUKernels {
                                  uint8_t *frontier_bmp_raw,
                                  uint32_t *frontier_array_raw,
                                  const int status_array_stride,
-                                 uint32_t *status_array_raw,
+                                 uint8_t *status_array_raw,
                                  const uint32_t *__restrict__ nodeList_raw,
                                  const uint64_t *__restrict__ edgeList_raw,
                                  const uint16_t *__restrict__ edgeProb_raw);
 
-    __global__ void cBFS_extract_leaves(const int nodeNum,
+    __global__ void cBFS_extract_nodes(const int nodeNum,
                                         const int status_stride,
                                         const int status_offset,
-                                        uint32_t *status_array_raw,
-                                        uint8_t* leaves_bmp);
+                                        uint8_t *status_array_raw,
+                                        uint8_t* nodes_bmp);
 };
 
 

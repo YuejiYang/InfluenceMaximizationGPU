@@ -18,13 +18,12 @@ void GPUMemManager::initDeviceMem(GraphStruct &graphStruct) {
     //edgeList
     this->edgeSize = graphStruct.edgesListSize;
     cudaMalloc((void**)&this->dev_edgeList_raw, this->edgeSize * sizeof(uint64_t));
-    cudaMemcpy(dev_edgeList_raw, graphStruct.edgesList, sizeof(uint64_t) * this->edgeSize, cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_edgeList_raw, graphStruct.reverseEdgesList, sizeof(uint64_t) * this->edgeSize, cudaMemcpyHostToDevice);
 
     cudaMalloc((void**)&this->dev_edgeprob_raw, this->edgeSize * sizeof(uint16_t));
     cudaMemcpy(this->dev_edgeprob_raw, graphStruct.edgesProb, sizeof(uint16_t) * this->edgeSize, cudaMemcpyHostToDevice);
 
 }
-
 
 void GPUMemManager::sortEdgesOnDev() {
     unsigned long long startTime_sortEdgeList = getTime();

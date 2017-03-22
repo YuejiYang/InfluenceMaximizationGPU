@@ -50,7 +50,7 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
                               uint8_t *frontier_bmp_raw,
                               uint32_t *frontier_array_raw,
                               const int status_array_stride,
-                              uint32_t *status_array_raw,
+                              uint8_t *status_array_raw,
                               const uint32_t *__restrict__ nodeList_raw,
                               const uint64_t *__restrict__ edgeList_raw,
                               const uint16_t *__restrict__ edgeProb_raw) {
@@ -76,56 +76,52 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
         int warp_offset = tid % 32;
         frontier_start = (jobs_start + i) / status_array_stride; // which node is being handled
         uint32_t curr_node = (uint32_t)frontier_array_raw[frontier_start];
-
         int status_start = curr_node * status_array_stride;
         int status_offset = (jobs_start + i) % status_array_stride;
+        uint8_t original_status = status_array_raw[status_start + status_offset];
 
-        uint32_t original_status = status_array_raw[status_start + status_offset];
+        if(original_status != (uint8_t)curr_level) continue;
 
         uint32_t edge_start, adj_size;
         edge_start = nodeList_raw[curr_node];
+
         if(curr_node == nodeNum - 1) {
             adj_size = edgeNum - edge_start;
         } else {
             adj_size = nodeList_raw[curr_node + 1] - nodeList_raw[curr_node];
         }
 
-        unsigned int seed = (unsigned int)tid;
         curandState s;
-        curand_init(seed, 0, 0, &s);
-        bool no_expansion = true;
+        curand_init(curr_node, (uint64_t)tid, 0, &s);
+
         while (warp_offset < adj_size) {
             uint32_t end_node = extractLow32bits(edgeList_raw[edge_start + warp_offset]);
             uint32_t end_node_status = status_array_raw[end_node * status_array_stride + status_offset];
-
-            if(end_node_status != ALL_F) {
+            if(end_node_status != ALL_4F) {
                 warp_offset += 32;
                 continue;
             }
+
             uint16_t prob2extend = edgeProb_raw[edge_start + warp_offset];
-            float prob_rand = curand_uniform(&s);
+            float prob_rand = curand_uniform(&s) * 100.0;
 
-            if (prob2extend < 100 * prob_rand) {
+            printf("%d\n", (int)prob_rand);
+
+            if (prob2extend < (int)prob_rand) {
                 warp_offset += 32;
                 continue;
             }
-            no_expansion = false;
-            status_array_raw[end_node * status_array_stride + status_offset] = curr_node | (1u << 31);//lock free
+            status_array_raw[end_node * status_array_stride + status_offset] = (uint8_t)(curr_level + 1);//lock free
             frontier_bmp_raw[end_node] = 1;
             warp_offset += 32;
         }
-        if(!no_expansion) {
-            status_array_raw[status_start + status_offset] = original_status & (ALL_F >> 1);
-        }
+
     }
 }
 
 __global__
-void GPUKernels::cBFS_extract_leaves(const int nodeNum,
-                                     const int status_stride,
-                                     const int status_offset,
-                                     uint32_t *status_array_raw,
-                                     uint8_t *leaves_bmp) {
+void GPUKernels::cBFS_extract_nodes(const int nodeNum, const int status_stride, const int status_offset,
+                                     uint8_t *status_array_raw, uint8_t *nodes_bmp) {
 
     uint32_t maxThreadNum = gridDim.x * blockDim.x;
     uint32_t maxJobsPerThread = nodeNum / maxThreadNum;
@@ -143,11 +139,9 @@ void GPUKernels::cBFS_extract_leaves(const int nodeNum,
     for (unsigned int i = 0;(tid < num_threads_one_more_job && i < maxJobsPerThread + 1) ||
                             (tid >= num_threads_one_more_job && i < maxJobsPerThread); ++i) {
         int status_pos = (start_idx_on_status_array + i) * status_stride + status_offset;
-        uint32_t original_status = status_array_raw[status_pos];
-        if(original_status != ALL_F && (original_status >> 31) == 1) {
-            leaves_bmp[start_idx_on_status_array + i] = 1;
+        uint8_t original_status = status_array_raw[status_pos];
+        if(original_status != ALL_4F && original_status != 0) { //exclude roots
+            nodes_bmp[start_idx_on_status_array + i] = 1;
         }
     }
-
-
 }

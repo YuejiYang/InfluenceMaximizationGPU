@@ -24,6 +24,7 @@ public:
 
     uint32_t edgesListSize;
     uint64_t* edgesList;
+    uint64_t* reverseEdgesList;
 
     uint16_t* edgesProb;
 
@@ -38,8 +39,7 @@ public:
     void writeObjToFile(const char* filename);
     void readObjFromFile(const char* filename);
 
-
-
+    void readSamples(const char* filename, std::vector<uint32_t>& init_bfs_nodes);
 
 };
 
