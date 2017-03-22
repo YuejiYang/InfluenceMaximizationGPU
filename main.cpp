@@ -10,7 +10,7 @@ int main() {
     graphStruct.readNodes("../data/nodes.csv");
     graphStruct.writeObjToFile("../data/graph.dat");
 
-    graphStruct.readObjFromFile("../data/graph.dat");
+    //graphStruct.readObjFromFile("../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
