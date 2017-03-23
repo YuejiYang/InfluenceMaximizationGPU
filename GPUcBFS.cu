@@ -107,7 +107,7 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
 
 
     if(frontier_num > 0) {
-        cout << "reach max level" << endl;
+        cout << "reach max level!" << endl;
     }
 
 
