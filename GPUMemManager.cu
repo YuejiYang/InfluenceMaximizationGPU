@@ -9,6 +9,7 @@ GPUMemManager::~GPUMemManager() {
     cudaFree(this->dev_nodeList_raw);
     cudaFree(this->dev_edgeList_raw);
     cudaFree(this->dev_edgeprob_raw);
+    cudaFree(this->all_states);
 }
 
 void GPUMemManager::initDeviceMem(GraphStruct &graphStruct) {
@@ -35,6 +36,11 @@ void GPUMemManager::sortEdgesOnDev() {
 
 }
 
+void GPUMemManager::init_randomStates(uint32_t maxGrid, uint32_t maxBlock, uint64_t seed) {
+    cudaMalloc((void**)&this->all_states, sizeof(curandState) * maxBlock * maxGrid);
+    GPUKernels::setup_random_state<<<dim3(maxGrid), dim3(maxBlock)>>>(this->all_states, seed);
+
+}
 
 void GPUMemManager::setNodeListOnDev(uint32_t grid_dim, uint32_t block_dim) {
     dim3 _grid_dim(grid_dim);

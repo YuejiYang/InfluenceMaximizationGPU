@@ -13,8 +13,10 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
                                 int edgeSize,
                                 const uint32_t *dev_nodeList_raw,
                                 const uint64_t *dev_edgeList_raw,
-                                const uint16_t *dev_edgeProb_raw) {
-    uint32_t max_level = 1000;
+                                const uint16_t *dev_edgeProb_raw,
+                                curandState* all_state,
+                                unsigned int maxGrid, unsigned int maxBlock) {
+    uint32_t max_level = MAX_DEPTH;
     uint8_t *frontier_bmp;
     cudaMalloc((void **) &frontier_bmp, sizeof(uint8_t) * nodeSize);
     thrust::device_ptr<uint8_t> frontier_bmp_ptr = thrust::device_pointer_cast(frontier_bmp);
@@ -35,7 +37,7 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
     }
     cudaMemcpy(status_array_d, status_array, sizeof(uint8_t) * status_array_size, cudaMemcpyHostToDevice);
 
-    thrust::device_ptr<uint8_t> status_ptr = thrust::device_pointer_cast(status_array_d);
+//    thrust::device_ptr<uint8_t> status_ptr = thrust::device_pointer_cast(status_array_d);
 
 
     int frontier_num = (int) init_bfs_nodes.size();
@@ -74,7 +76,7 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
 //        }
 
         unsigned long long kernel1 = getTime();
-        GPUKernels::cBFS_by_warp<<<dim3(1024), dim3(256)>>>(nodeSize,
+        GPUKernels::cBFS_by_warp<<<dim3(maxGrid), dim3(maxBlock)>>>(nodeSize,
                                  edgeSize,
                                  level,
                                  frontier_num,
@@ -84,7 +86,8 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
                                  status_array_d,
                                  dev_nodeList_raw,
                                  dev_edgeList_raw,
-                                 dev_edgeProb_raw);
+                                 dev_edgeProb_raw,
+                                 all_state);
 
         cudaDeviceSynchronize();
         unsigned long long kernel2 = getTime();
@@ -116,7 +119,7 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
     for(unsigned int i = 0; i < init_bfs_nodes.size(); ++i) {
         thrust::fill(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, 0u);
 
-        GPUKernels::cBFS_extract_nodes<<<dim3(1024), dim3(256)>>>(nodeSize,
+        GPUKernels::cBFS_extract_nodes<<<dim3(maxGrid), dim3(maxBlock)>>>(nodeSize,
                 status_array_stride,
                 i,
                 status_array_d,

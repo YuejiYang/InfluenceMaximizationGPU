@@ -85,13 +85,17 @@ namespace GPUKernels {
                                  uint8_t *status_array_raw,
                                  const uint32_t *__restrict__ nodeList_raw,
                                  const uint64_t *__restrict__ edgeList_raw,
-                                 const uint16_t *__restrict__ edgeProb_raw);
+                                 const uint16_t *__restrict__ edgeProb_raw,
+                                 curandState* all_state);
 
     __global__ void cBFS_extract_nodes(const int nodeNum,
                                         const int status_stride,
                                         const int status_offset,
                                         uint8_t *status_array_raw,
                                         uint32_t* nodes_bmp);
+
+    __global__ void setup_random_state(curandState* state, uint64_t seed);
+
 };
 
 

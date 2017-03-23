@@ -62,7 +62,8 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
                               uint8_t *status_array_raw,
                               const uint32_t *__restrict__ nodeList_raw,
                               const uint64_t *__restrict__ edgeList_raw,
-                              const uint16_t *__restrict__ edgeProb_raw) {
+                              const uint16_t *__restrict__ edgeProb_raw,
+                              curandState* all_state) {
 
     int maxWarpNum = gridDim.x * blockDim.x / 32;
     int total_jobs = frontier_num * status_array_stride;
@@ -80,7 +81,7 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
 
     for (unsigned int i = 0;(warp_id < num_warps_one_more_job && i < maxJobsPerWarp + 1) ||
                             (warp_id >= num_warps_one_more_job && i < maxJobsPerWarp); ++i) {
-        int warp_offset = tid % 32;
+
         frontier_start = (jobs_start + i) / status_array_stride; // which node is being handled
         uint32_t curr_node = (uint32_t)frontier_array_raw[frontier_start];
 
@@ -100,10 +101,9 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
         }
 
 
-        curandState s;
-        curand_init(curr_node, (uint64_t)tid, 0, &s);
+        curandState localState = all_state[tid];
 
-        for(; warp_offset < adj_size; warp_offset+=32) {
+        for(int warp_offset = tid % 32; warp_offset < adj_size; warp_offset+=32) {
             uint32_t end_node = extractLow32bits(edgeList_raw[edge_start + warp_offset]);
             uint8_t end_node_status = status_array_raw[end_node * status_array_stride + status_offset];
             if(end_node_status != ALL_2F) {
@@ -111,14 +111,11 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
             }
 
             uint16_t prob2extend = edgeProb_raw[edge_start + warp_offset];
-            float prob_rand = curand_uniform(&s) * 100.0;
-
-            //printf("%d\n", (int)prob_rand);
-
+            float prob_rand = curand_uniform(&localState) * 100.0;
+            all_state[tid] = localState;
             if (prob2extend < (uint16_t)prob_rand) {
                 continue;
             }
-           // printf("@@@@@@@@@,%d\n", end_node);
             status_array_raw[end_node * status_array_stride + status_offset] = (uint8_t)(curr_level + 1);//lock free
             frontier_bmp_raw[end_node] = 1;
         }
@@ -153,4 +150,14 @@ void GPUKernels::cBFS_extract_nodes(const int nodeNum, const int status_stride, 
             nodes_bmp[nodeId] = 1;
         }
     }
+}
+
+__global__
+void GPUKernels::setup_random_state(curandState* state, uint64_t seed) {
+
+    uint64_t tid = threadIdx.x + blockIdx.x * blockDim.x;
+    if(tid < gridDim.x * blockDim.x)
+        curand_init(seed, tid, 0, &state[tid]);
+
+
 }

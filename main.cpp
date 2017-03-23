@@ -17,6 +17,8 @@ int main() {
     gpuMemManager.initDeviceMem(graphStruct);
     gpuMemManager.sortEdgesOnDev();
     gpuMemManager.setNodeListOnDev(1024, 256);
+    unsigned int maxGrid = 1024,  maxBlock = 256;
+    gpuMemManager.init_randomStates(maxGrid, maxBlock);
 
     std::vector<uint32_t> init_bfs;
     std::vector<std::vector<uint32_t>> inter_nodes;
@@ -26,6 +28,7 @@ int main() {
     //graphStruct.readSamples("../data/testNodes.txt", init_bfs);
     int init_bfs_once = 10000;
     int cycles = (int)(init_bfs.size() - 1) / init_bfs_once + 1;
+
 
     std::cout << "\nstart concurrent BFS..." << std::endl;
     unsigned long long st = getTime();
@@ -46,7 +49,10 @@ int main() {
                                    gpuMemManager.edgeSize,
                                    gpuMemManager.dev_nodeList_raw,
                                    gpuMemManager.dev_edgeList_raw,
-                                   gpuMemManager.dev_edgeprob_raw);
+                                   gpuMemManager.dev_edgeprob_raw,
+                                   gpuMemManager.all_states,
+                                   maxGrid,
+                                   maxBlock);
         //break;
 
     }
