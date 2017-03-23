@@ -6,11 +6,17 @@
 int main() {
     //read files
     GraphStruct graphStruct = GraphStruct();
-    graphStruct.readEdgeList("../data/edges_with_prob.txt");
-    graphStruct.readNodes("../data/nodes.txt");
-    graphStruct.writeObjToFile("../data/graph.dat");
 
-    //graphStruct.readObjFromFile("../data/graph.dat");
+    //graphStruct.readNodes("../data/testNodes.txt");
+    graphStruct.readNodes("../data/nodes.txt");
+
+    graphStruct.readEdgeList("../data/edges_with_prob.txt");
+    //graphStruct.readEdgeList("../data/testEdges.txt");
+
+
+    //graphStruct.writeObjToFile("../data/graph.dat");
+
+   // graphStruct.readObjFromFile("../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
@@ -22,21 +28,23 @@ int main() {
 
 
     graphStruct.readSamples("../data/samples.txt", init_bfs);
-
-    int init_bfs_once = 100;
+    //graphStruct.readSamples("../data/testNodes.txt", init_bfs);
+    int init_bfs_once = 10000;
     int cycles = (int)(init_bfs.size() - 1) / init_bfs_once + 1;
 
-    init_bfs.push_back(0);
-    init_bfs.push_back(8);
-
+    std::cout << "\nstart concurrent BFS..." << std::endl;
+    unsigned long long st = getTime();
     for (int l = 0; l < cycles; ++l) {
         int total_num_init_bfs = init_bfs_once;
         int init_bfs_start = init_bfs_once * l;
         if( l == cycles - 1) {
             total_num_init_bfs = (int)init_bfs.size() - init_bfs_start;
         }
+
+
         std::vector<uint32_t> temp_init_bfs((uint64_t)total_num_init_bfs);
         std::copy(init_bfs.begin() + init_bfs_start, init_bfs.begin() + init_bfs_start + total_num_init_bfs, temp_init_bfs.begin());
+
         GPUcBFS::gpucBFS_expansion(temp_init_bfs,
                                    inter_nodes,
                                    gpuMemManager.nodeSize,
@@ -44,10 +52,12 @@ int main() {
                                    gpuMemManager.dev_nodeList_raw,
                                    gpuMemManager.dev_edgeList_raw,
                                    gpuMemManager.dev_edgeprob_raw);
-        break;
+        //break;
 
     }
+    unsigned long long et = getTime();
 
+    std::cout << "******Total time = " << getInterval(st, et) << "ms. " << std::endl;
 
     return 0;
 }

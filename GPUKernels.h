@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <curand_kernel.h>
 
-#define ALL_4F 0xFF
+#define ALL_2F 0xFF
 #define ALL_F 0xFFFFFFFF
 inline
 unsigned long long getTime() {
@@ -68,7 +68,8 @@ uint64_t combine2u32(uint32_t high, uint32_t low) {
 
 namespace GPUKernels {
 
-    __global__ void setNodeListOnDev(uint32_t edgeListSize,
+    __global__ void setNodeListOnDev(uint32_t nodeListSize,
+                                     uint32_t edgeListSize,
                                      uint32_t *nodeList_dev_ptr,
                                      uint64_t *edgeList_dev_ptr,
                                      uint32_t maxJobsPerThread,
@@ -79,7 +80,7 @@ namespace GPUKernels {
                                  const int curr_level,
                                  const int frontier_num,
                                  uint8_t *frontier_bmp_raw,
-                                 uint32_t *frontier_array_raw,
+                                 const uint32_t *__restrict__ frontier_array_raw,
                                  const int status_array_stride,
                                  uint8_t *status_array_raw,
                                  const uint32_t *__restrict__ nodeList_raw,
@@ -90,7 +91,7 @@ namespace GPUKernels {
                                         const int status_stride,
                                         const int status_offset,
                                         uint8_t *status_array_raw,
-                                        uint8_t* nodes_bmp);
+                                        uint32_t* nodes_bmp);
 };
 
 

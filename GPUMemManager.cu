@@ -45,8 +45,12 @@ void GPUMemManager::setNodeListOnDev(uint32_t grid_dim, uint32_t block_dim) {
     uint32_t num_threads_one_more_job = this->edgeSize % maxThreadNum;
 
     unsigned long long startTime_appendAdjList = getTime();
-    GPUKernels::setNodeListOnDev<<<_grid_dim, _block_dim >>>(this->edgeSize, this->dev_nodeList_raw, this->dev_edgeList_raw,
-            maxJobsPerThread, num_threads_one_more_job);
+    GPUKernels::setNodeListOnDev<<<_grid_dim, _block_dim >>>(this->nodeSize,
+                                 this->edgeSize,
+                                 this->dev_nodeList_raw,
+                                 this->dev_edgeList_raw,
+                                 maxJobsPerThread,
+                                 num_threads_one_more_job);
     cudaDeviceSynchronize();
     unsigned long long endTime_appendAdjList = getTime();
 
