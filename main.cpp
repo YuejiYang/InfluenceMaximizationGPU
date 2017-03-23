@@ -7,16 +7,11 @@ int main() {
     //read files
     GraphStruct graphStruct = GraphStruct();
 
-    //graphStruct.readNodes("../data/testNodes.txt");
     graphStruct.readNodes("../data/nodes.txt");
-
     graphStruct.readEdgeList("../data/edges_with_prob.txt");
-    //graphStruct.readEdgeList("../data/testEdges.txt");
-
-
+    
     //graphStruct.writeObjToFile("../data/graph.dat");
-
-   // graphStruct.readObjFromFile("../data/graph.dat");
+    //graphStruct.readObjFromFile("../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
