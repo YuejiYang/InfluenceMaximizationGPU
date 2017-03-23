@@ -9,7 +9,7 @@ int main() {
 
     graphStruct.readNodes("../data/nodes.txt");
     graphStruct.readEdgeList("../data/edges_with_prob.txt");
-    
+
     //graphStruct.writeObjToFile("../data/graph.dat");
     //graphStruct.readObjFromFile("../data/graph.dat");
 
