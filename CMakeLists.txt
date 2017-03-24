@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
-project(InfluenceMaximizationGPU)
+
+set(PROJECT_NAME InfluenceMaximizationGPU)
+
+project(${PROJECT_NAME})
 
 include(CheckCXXCompilerFlag)
 set(CMAKE_CXX_STANDARD 11)
@@ -34,3 +37,4 @@ set(SOURCE_FILES main.cpp
 
 cuda_add_executable(InfluenceMaximizationGPU ${SOURCE_FILES})
 
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

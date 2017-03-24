@@ -8,11 +8,11 @@ int main() {
     //read files
     GraphStruct graphStruct = GraphStruct();
 
-//    graphStruct.readNodes("../data/nodes.txt");
-//    graphStruct.readEdgeList("../data/edges_with_prob.txt");
+//    graphStruct.readNodes("../../data/nodes.txt");
+//    graphStruct.readEdgeList("../../data/edges_with_prob.txt");
 //
-//    graphStruct.writeObjToFile("../data/graph.dat");
-    graphStruct.readObjFromFile("./data/graph.dat");
+//    graphStruct.writeObjToFile("../../data/graph.dat");
+    graphStruct.readObjFromFile("../../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
@@ -25,8 +25,8 @@ int main() {
     std::vector<std::vector<uint32_t>> inter_nodes;
 
 
-    graphStruct.readSamples("./data/nodes.txt", init_bfs);
-    //graphStruct.readSamples("../data/testNodes.txt", init_bfs);
+    graphStruct.readSamples("../../data/nodes.txt", init_bfs);
+    //graphStruct.readSamples("../../data/testNodes.txt", init_bfs);
     int init_bfs_once = 10000;
     int cycles = (int)(init_bfs.size() - 1) / init_bfs_once + 1;
 

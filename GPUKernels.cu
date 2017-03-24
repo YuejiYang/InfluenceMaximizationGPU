@@ -111,7 +111,7 @@ void GPUKernels::cBFS_by_warp(const int nodeNum,
             }
 
             uint16_t prob2extend = edgeProb_raw[edge_start + warp_offset];
-            float prob_rand = curand_uniform(&localState) * 100.0;
+            float prob_rand = curand_uniform(&localState) * PROB_SCALE;
             all_state[tid] = localState;
             if (prob2extend < (uint16_t)prob_rand) {
                 continue;

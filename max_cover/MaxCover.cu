@@ -26,7 +26,7 @@ void transformSets(vector<vector<unsigned > > &sets, NextMap &nextElem, unordere
 {
 	unordered_map<unsigned, unsigned> curElem;
 
-	for(int i=0;i<sets.size();i++){
+	for(int i=0;i < sets.size();i++){
 		unordered_set<unsigned> si(sets[i].begin(), sets[i].end());
 		vecSets.insert(make_pair((unsigned)i, si) );
 
