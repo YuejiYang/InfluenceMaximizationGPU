@@ -7,11 +7,11 @@ int main() {
     //read files
     GraphStruct graphStruct = GraphStruct();
 
-    graphStruct.readNodes("../data/nodes.txt");
-    graphStruct.readEdgeList("../data/edges_with_prob.txt");
-
-    //graphStruct.writeObjToFile("../data/graph.dat");
-    //graphStruct.readObjFromFile("../data/graph.dat");
+//    graphStruct.readNodes("../data/nodes.txt");
+//    graphStruct.readEdgeList("../data/edges_with_prob.txt");
+//
+//    graphStruct.writeObjToFile("../data/graph.dat");
+    graphStruct.readObjFromFile("../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
@@ -24,7 +24,7 @@ int main() {
     std::vector<std::vector<uint32_t>> inter_nodes;
 
 
-    graphStruct.readSamples("../data/samples.txt", init_bfs);
+    graphStruct.readSamples("../data/nodes.txt", init_bfs);
     //graphStruct.readSamples("../data/testNodes.txt", init_bfs);
     int init_bfs_once = 10000;
     int cycles = (int)(init_bfs.size() - 1) / init_bfs_once + 1;
@@ -57,8 +57,10 @@ int main() {
 
     }
     unsigned long long et = getTime();
+    std::cout << "******Total BFS time = " << getInterval(st, et) << "ms. " << std::endl;
 
-    std::cout << "******Total time = " << getInterval(st, et) << "ms. " << std::endl;
+    //vec<> init_bfs,   vec<vec<>>inter_nodes
+
 
     return 0;
 }
