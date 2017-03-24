@@ -57,7 +57,7 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
         thrust::sort_by_key(frontier_bmp_ptr, frontier_bmp_ptr + nodeSize, curr_frontier_ptr,
                             thrust::greater<uint32_t>());
         frontier_num = thrust::reduce(frontier_bmp_ptr, frontier_bmp_ptr + nodeSize, (uint32_t) 0);//this third parameter cannot be (uint8_t)0
-       // cout << frontier_num << endl;
+        //cout << frontier_num << endl;
         thrust::fill(frontier_bmp_ptr, frontier_bmp_ptr + nodeSize, 0u);
         unsigned long long prepare2 = getTime();
         prepare_time += getInterval(prepare1, prepare2);
@@ -102,40 +102,61 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
 //            cout << endl;
 //        }
 
-
     }
 
-
+    cout << "prepare time = " << prepare_time << "ms " << endl;
     if(frontier_num > 0) {
         cout << "reach max level!" << endl;
     }
+    cout << kernel_time << " : ";
 
+//    uint32_t* leaves_bmp;
+//    cudaMalloc((void**)&leaves_bmp, sizeof(uint32_t) * nodeSize);
+//    thrust::device_ptr<uint32_t> leaves_bmp_ptr = thrust::device_pointer_cast(leaves_bmp);
+//    thrust::device_vector<int> node_id((uint64_t)nodeSize);
 
-    uint32_t* leaves_bmp;
-    cudaMalloc((void**)&leaves_bmp, sizeof(uint32_t) * nodeSize);
-    thrust::device_ptr<uint32_t> leaves_bmp_ptr = thrust::device_pointer_cast(leaves_bmp);
-    thrust::device_vector<int> node_id((uint64_t)nodeSize);
+    unsigned long long agg1 = getTime();
 
-    for(unsigned int i = 0; i < init_bfs_nodes.size(); ++i) {
-        thrust::fill(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, 0u);
-
-        GPUKernels::cBFS_extract_nodes<<<dim3(maxGrid), dim3(maxBlock)>>>(nodeSize,
-                status_array_stride,
-                i,
-                status_array_d,
-                leaves_bmp);
-
-        cudaDeviceSynchronize();
-        uint32_t inter_nodes_size = thrust::reduce(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, (uint32_t)0);
-        thrust::copy(_first_id, _last_id, node_id.begin());
-        thrust::sort_by_key(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, node_id.begin(), thrust::greater<uint32_t>());
-        std::vector<uint32_t> leavesOne(inter_nodes_size);
-        thrust::copy(node_id.begin(), node_id.begin() + inter_nodes_size, leavesOne.begin());
-        nodes.push_back(leavesOne);
-
-    }
-
-//    for (int l = 0; l < nodes.size(); ++l) {
+//    double gpu_extract_time = 0.0;
+//    double mem_time = 0.0;
+//    for(unsigned int i = 0; i < init_bfs_nodes.size(); ++i) {
+//
+//        unsigned long long extract1 = getTime();
+//
+//        thrust::fill(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, 0u);
+//        GPUKernels::cBFS_extract_nodes<<<dim3(maxGrid), dim3(maxBlock)>>>(nodeSize,
+//                status_array_stride,
+//                i,
+//                status_array_d,
+//                leaves_bmp);
+//
+//        cudaDeviceSynchronize();
+//        unsigned long long extract2 = getTime();
+//        uint32_t inter_nodes_size = thrust::reduce(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, (uint32_t)0);
+//        unsigned long long extract3 = getTime();
+//        thrust::copy(_first_id, _last_id, node_id.begin());
+//
+//        thrust::sort_by_key(leaves_bmp_ptr, leaves_bmp_ptr + nodeSize, node_id.begin(), thrust::greater<uint32_t>());
+//
+//
+//        //gpu_extract_time += getInterval(extract1, extract2);
+//        gpu_extract_time += getInterval(extract2, extract3);
+//
+//        unsigned long long extract11 = getTime();
+//        std::vector<uint32_t> leavesOne(inter_nodes_size);
+//        thrust::copy(node_id.begin(), node_id.begin() + inter_nodes_size, leavesOne.begin());
+//        nodes.push_back(leavesOne);
+//
+//        unsigned long long extract22 = getTime();
+//        mem_time += getInterval(extract11, extract22);
+//
+//    }
+//    unsigned long long agg2 = getTime();
+//    cout << getInterval(agg1, agg2) << endl;
+//
+//    cout << "extractTime = " << gpu_extract_time << endl;
+//    cout << "memcpy time = " << mem_time << endl;
+    //    for (int l = 0; l < nodes.size(); ++l) {
 //        cout << l << " : \n----";
 //        for (int m = 0; m < nodes[l].size(); ++m) {
 //            cout << nodes[l][m] << " , ";
@@ -144,7 +165,25 @@ void GPUcBFS::gpucBFS_expansion(std::vector<uint32_t> init_bfs_nodes,
 //    }
 
 
-    cudaFree(leaves_bmp);
+    int init_bfs_num = (int)init_bfs_nodes.size();
+    uint32_t* bfs_index_h = (uint32_t*)malloc(sizeof(uint32_t) * init_bfs_num);
+    uint32_t* bfs_index_d;
+    cudaMalloc((void**)&bfs_index_d, sizeof(uint32_t) * init_bfs_num);
+    thrust::device_ptr<uint32_t> bfs_index_ptr = thrust::device_pointer_cast(bfs_index_d);
+    thrust::fill(bfs_index_ptr, bfs_index_ptr + init_bfs_num, 0);
+    uint64_t cs1 = getTime();
+    GPUKernels::calculate_space_nodes<<<dim3(maxGrid), dim3(maxBlock)>>>(nodeSize, status_array_stride, init_bfs_num, status_array_d, bfs_index_d);
+
+    thrust::inclusive_scan(bfs_index_ptr, bfs_index_ptr + init_bfs_num, bfs_index_ptr);
+    cudaDeviceSynchronize();
+    uint64_t cs2 = getTime();
+    cout << getInterval(cs1, cs2) << endl;
+
+
+
+    cudaFree(bfs_index_d);
+
+   //cudaFree(leaves_bmp);
     cudaFree(curr_frontier_raw);
     cudaFree(frontier_bmp);
     cudaFree(status_array_d);

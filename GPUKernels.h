@@ -24,7 +24,7 @@
 #define ALL_2F 0xFF
 #define ALL_F 0xFFFFFFFF
 
-#define PROB_SCALE 1000 //from 0.0 ~ 1.0 scale to this range
+#define PROB_SCALE 200 //from 0.0 ~ 1.0 scale to this range
 
 
 inline
@@ -99,6 +99,15 @@ namespace GPUKernels {
                                         uint32_t* nodes_bmp);
 
     __global__ void setup_random_state(curandState* state, uint64_t seed);
+
+
+    __global__ void calculate_space_nodes(const int nodeNum,
+                                          const int status_stride,
+                                          const int bfs_num,
+                                          const uint8_t *__restrict__ status_array_raw,
+                                          uint32_t* bfs_index_d);
+
+    __global__ void extract_nodes();
 
 };
 

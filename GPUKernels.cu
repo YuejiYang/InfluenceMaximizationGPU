@@ -161,3 +161,42 @@ void GPUKernels::setup_random_state(curandState* state, uint64_t seed) {
 
 
 }
+
+__global__
+void GPUKernels::calculate_space_nodes(const int nodeNum,
+                                       const int status_stride,
+                                       const int bfs_num,
+                                       const uint8_t* __restrict__ status_array_raw,
+                                       uint32_t* bfs_index_d) {
+    uint32_t maxThreadNum = gridDim.x * blockDim.x;
+    uint32_t total_jobs = (uint32_t)nodeNum * status_stride;
+    uint32_t maxJobsPerThread = total_jobs / maxThreadNum;
+    uint32_t num_threads_one_more_job = nodeNum % maxThreadNum;
+    uint32_t tid = blockDim.x * blockIdx.x + threadIdx.x;
+    uint64_t start_idx_on_status_array;
+
+    if (tid < num_threads_one_more_job) {
+        start_idx_on_status_array = tid * (maxJobsPerThread + 1);
+    } else {
+        start_idx_on_status_array =
+                num_threads_one_more_job * (maxJobsPerThread + 1) + (tid - num_threads_one_more_job) * maxJobsPerThread;
+    }
+    for (unsigned int i = 0;(tid < num_threads_one_more_job && i < maxJobsPerThread + 1) ||
+                            (tid >= num_threads_one_more_job && i < maxJobsPerThread); ++i) {
+        uint64_t status_idx = start_idx_on_status_array + i;
+        //uint32_t nodeId = (uint32_t)(status_idx / status_stride);
+        uint32_t status_offset = (uint32_t)(status_idx % status_stride);
+        uint8_t original_status = status_array_raw[status_idx];
+        if(original_status != ALL_2F && original_status != 0) { //exclude roots
+            atomicAdd(&bfs_index_d[status_offset], 1);
+        }
+
+    }
+
+
+
+}
+__global__
+void GPUKernels::extract_nodes(){
+
+}
