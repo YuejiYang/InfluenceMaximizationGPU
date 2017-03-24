@@ -31,12 +31,16 @@ void transformSets(vector<vector<unsigned > > &sets, NextMap &nextElem, unordere
 		vecSets.insert(make_pair((unsigned)i, si) );
 
 		for(auto elem:sets[i]){
-			if(firstElem.find(elem)!=firstElem.end()){
+			if(firstElem.find(elem)==firstElem.end()){
 				firstElem[elem] = i;
 				curElem[elem] = i;
 			} else{
 				//  c(e),e|->i  && c(e)=i
-				if(curElem[elem]!=i){
+				if(curElem[elem] == i) {
+                    cout << i << " : " << elem << endl;
+                }
+
+                if(curElem[elem]!=i){
 					nextElem[make_pair(curElem[elem], elem)] = i;
 					curElem[elem] = i;
 				}
