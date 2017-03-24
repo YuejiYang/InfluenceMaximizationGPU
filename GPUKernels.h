@@ -24,7 +24,7 @@
 #define ALL_2F 0xFF
 #define ALL_F 0xFFFFFFFF
 
-#define PROB_SCALE 1000 //from 0.0 ~ 1.0 scale to this range
+#define PROB_SCALE 200 //from 0.0 ~ 1.0 scale to this range
 
 
 inline
