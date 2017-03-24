@@ -2,6 +2,7 @@
 #include "GraphStruct.h"
 #include "GPUMemManager.h"
 #include "GPUcBFS.h"
+#include "max_cover/MaxCover.h"
 
 int main() {
     //read files
@@ -11,7 +12,7 @@ int main() {
 //    graphStruct.readEdgeList("../data/edges_with_prob.txt");
 //
 //    graphStruct.writeObjToFile("../data/graph.dat");
-    graphStruct.readObjFromFile("../data/graph.dat");
+    graphStruct.readObjFromFile("./data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
@@ -24,7 +25,7 @@ int main() {
     std::vector<std::vector<uint32_t>> inter_nodes;
 
 
-    graphStruct.readSamples("../data/nodes.txt", init_bfs);
+    graphStruct.readSamples("./data/nodes.txt", init_bfs);
     //graphStruct.readSamples("../data/testNodes.txt", init_bfs);
     int init_bfs_once = 10000;
     int cycles = (int)(init_bfs.size() - 1) / init_bfs_once + 1;
@@ -60,6 +61,13 @@ int main() {
     std::cout << "******Total BFS time = " << getInterval(st, et) << "ms. " << std::endl;
 
     //vec<> init_bfs,   vec<vec<>>inter_nodes
+
+    const int K = 100;
+
+    unsigned long long st2 = getTime();
+    auto res = maxCoverGreedy(inter_nodes, init_bfs, K);
+    unsigned long long et2 = getTime();
+    std::cout << "******100-Max cover = " << getInterval(st2, et2) << "ms. " << std::endl;
 
 
     return 0;

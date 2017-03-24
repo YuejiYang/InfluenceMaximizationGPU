@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <functional>
+#include <iostream>
 
 using namespace std;
 
@@ -50,22 +51,30 @@ std::vector<unsigned> maxCoverGreedy(std::vector<std::vector<unsigned> > &sets, 
 	unordered_map<unsigned, unsigned> firstElem;
 	unordered_map<unsigned, unordered_set<unsigned> > vecSets;
 
+	cout << "transform\n";
 	transformSets(sets, nextElem, firstElem, vecSets);
 
 
 	vector<unsigned> results;
 
 	for(int i=0;i<k;i++){
+		cout << i << "-th round\n";
 		pair<int, int> max_set(-1, -1);
-		for(int k=i;k<vecSets.size();k++){
-			max_set = max(max_set, pair<int, int>(vecSets[k].size(), k));
+		for(auto p:vecSets){
+//			cout << p.first << ", " << p.second.size() << "\n";
+			max_set = max(max_set, pair<int, int>(p.second.size(), p.first));
 		}
 
 		for(unsigned elem:vecSets[max_set.second]){
+//			cout << "elem: " << elem << "\n";
 			unsigned cur = firstElem[elem];
 			while(true){
+				if(cur!=max_set.second){
+					vecSets[cur].erase(elem);
+				}
 				//delete elem from cur
-				vecSets[cur].erase(elem);
+
+//				cout << "del:" << cur << ", " << elem << "\n";
 
 				auto kp = make_pair(cur, elem);
 				auto iter = nextElem.find(kp);

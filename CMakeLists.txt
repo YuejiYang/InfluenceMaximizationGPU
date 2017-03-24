@@ -30,7 +30,7 @@ set(SOURCE_FILES main.cpp
         GraphStruct.cu GraphStruct.h
         GPUKernels.cu GPUKernels.h
         GPUMemManager.cu GPUMemManager.h
-        GPUcBFS.cu GPUcBFS.h)
+        GPUcBFS.cu GPUcBFS.h max_cover/MaxCover.h max_cover/MaxCover.cu)
 
 cuda_add_executable(InfluenceMaximizationGPU ${SOURCE_FILES})
 
