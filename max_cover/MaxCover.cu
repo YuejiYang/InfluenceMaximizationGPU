@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 
+
 using namespace std;
 
 
@@ -36,9 +37,9 @@ void transformSets(vector<vector<unsigned > > &sets, NextMap &nextElem, unordere
 				curElem[elem] = i;
 			} else{
 				//  c(e),e|->i  && c(e)=i
-				if(curElem[elem] == i) {
-                    cout << i << " : " << elem << endl;
-                }
+//				if(curElem[elem] == i) {
+//                    cout << i << " : " << elem << " : " << curElem[elem] << endl;
+//                }
 
                 if(curElem[elem]!=i){
 					nextElem[make_pair(curElem[elem], elem)] = i;
@@ -64,11 +65,11 @@ std::vector<unsigned> maxCoverGreedy(std::vector<std::vector<unsigned> > &sets, 
 	vector<unsigned> results;
 
 	for(int i=0;i<k;i++){
-		cout << i << "-th round\n";
-		pair<int, int> max_set(-1, -1);
+		//cout << i << "-th round\n";
+		pair<int, unsigned> max_set(-1, 0u);
 		for(auto p:vecSets){
 //			cout << p.first << ", " << p.second.size() << "\n";
-			max_set = max(max_set, pair<int, int>(p.second.size(), p.first));
+			max_set = max(max_set, pair<int, unsigned>(p.second.size(), p.first));
 		}
 
 //		cout << "deleting\n";
@@ -94,7 +95,7 @@ std::vector<unsigned> maxCoverGreedy(std::vector<std::vector<unsigned> > &sets, 
 		}
 
 		results.push_back(roots[max_set.second]);
-		vecSets.erase(max_set.second);
+		vecSets.erase((max_set.second));
 	}
 
 	return results;

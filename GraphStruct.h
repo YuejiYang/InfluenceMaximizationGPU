@@ -12,7 +12,9 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include "globalSettings.h"
 #include "GPUKernels.h"
+
 
 
 //node id should be continuous and starts from 0

@@ -1,24 +1,27 @@
 #include <iostream>
+
+#include "globalSettings.h"
 #include "GraphStruct.h"
 #include "GPUMemManager.h"
 #include "GPUcBFS.h"
 #include "max_cover/MaxCover.h"
 
+
 int main() {
     //read files
     GraphStruct graphStruct = GraphStruct();
 
-//    graphStruct.readNodes("../../data/nodes.txt");
-//    graphStruct.readEdgeList("../../data/edges_with_prob.txt");
+    graphStruct.readNodes("../../data/nodes.txt");
+    graphStruct.readEdgeList("../../data/edges_with_prob.txt");
 //
 //    graphStruct.writeObjToFile("../../data/graph.dat");
-    graphStruct.readObjFromFile("../../data/graph.dat");
+    //graphStruct.readObjFromFile("../../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
     gpuMemManager.sortEdgesOnDev();
     gpuMemManager.setNodeListOnDev(1024, 256);
-    unsigned int maxGrid = 1024,  maxBlock = 256;
+    unsigned int maxGrid = 1024,  maxBlock = 512;
     gpuMemManager.init_randomStates(maxGrid, maxBlock);
 
     std::vector<uint32_t> init_bfs;
@@ -27,7 +30,9 @@ int main() {
 
     graphStruct.readSamples("../../data/nodes.txt", init_bfs);
     //graphStruct.readSamples("../../data/testNodes.txt", init_bfs);
-    int init_bfs_once = 10000;
+    int init_bfs_once = 512;//76ms
+    //int init_bfs_once = 1024;//195ms
+    //int init_bfs_once = 256;//31ms
     int cycles = (int)(init_bfs.size() - 1) / init_bfs_once + 1;
 
 
@@ -62,10 +67,10 @@ int main() {
 
     //vec<> init_bfs,   vec<vec<>>inter_nodes
 
-    const int K = 100;
+
 
     unsigned long long st2 = getTime();
-    auto res = maxCoverGreedy(inter_nodes, init_bfs, K);
+    auto res = maxCoverGreedy(inter_nodes, init_bfs, TOPK);
     unsigned long long et2 = getTime();
     std::cout << "******100-Max cover = " << getInterval(st2, et2) << "ms. " << std::endl;
 

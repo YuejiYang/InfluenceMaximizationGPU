@@ -49,11 +49,20 @@ void GraphStruct::readEdgeList(const char *edgeFile){
         istringstream iss(contents[i]);
         vector<uint32_t> tripe;
         uint32_t temp;
-        while ( iss >> temp ) {
-            tripe.push_back(temp);
-            if (iss.peek() == ',')
-                iss.ignore();
-        }
+        double tmpd;
+        uint32_t tmpin, tmpout;
+        iss>>tmpin>>tmpout>>tmpd;
+        temp = (uint32_t)tmpd*PROB_SCALE;
+        tripe.push_back(tmpin);
+        tripe.push_back(tmpout);
+        tripe.push_back(temp);
+
+//        while ( iss >> tmpd ) {
+//            temp = (uint32_t)tmpd*PROB_SCALE;
+//            tripe.push_back(temp);
+//            if (iss.peek() == ',')
+//                iss.ignore();
+//        }
 
         //node Id start from 1. Use 0 as a special mark
         if(tripe[0] == tripe[1]) continue;

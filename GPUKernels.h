@@ -20,11 +20,9 @@
 #include <stdlib.h>
 #include <cstdint>
 #include <curand_kernel.h>
-
+#include "globalSettings.h"
 #define ALL_2F 0xFF
 #define ALL_F 0xFFFFFFFF
-
-#define PROB_SCALE 200 //from 0.0 ~ 1.0 scale to this range
 
 
 inline
@@ -107,7 +105,13 @@ namespace GPUKernels {
                                           const uint8_t *__restrict__ status_array_raw,
                                           uint32_t* bfs_index_d);
 
-    __global__ void extract_nodes();
+    __global__ void extract_nodes(uint32_t* inter_nodes_d,
+                                  const int nodeNum,
+                                  const int status_stride,
+                                  const int bfs_num,
+                                  const uint8_t *__restrict__ status_array_raw,
+                                  const uint32_t *__restrict__ bfs_index_d,
+                                  uint32_t* bfs_index_rep_d);
 
 };
 
