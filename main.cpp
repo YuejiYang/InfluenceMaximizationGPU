@@ -10,6 +10,21 @@
 int main() {
     cudaSetDevice(1);
     //read files
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     GraphStruct graphStruct = GraphStruct();
 
     graphStruct.readNodes("../../data/nodes.txt");
