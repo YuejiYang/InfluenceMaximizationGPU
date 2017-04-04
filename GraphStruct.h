@@ -43,8 +43,9 @@ public:
     void readObjFromFile(const char* filename);
     void cpyBackToHost(uint32_t* nodeList_d, uint64_t* edgeList_d);
 
-    void readSamples(const char* filename, std::vector<uint32_t>& init_bfs_nodes);
 
+    void readSamples(const char* filename, std::vector<uint32_t>& init_bfs_nodes);
+    void randSample(const int sample_nmb, std::vector<uint32_t>& init_bfs_nodes, unsigned int rand_init = 0);
 };
 
 

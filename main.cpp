@@ -16,27 +16,24 @@ int main() {
     cudaSetDevice(1);
     //read files
 
-    string dataset = "data/epinions/";
-    string model="IC";
-    double epsilon=0.5;
+    string dataset = "../../data/epinions/";
+    string model = "IC";
+    double epsilon = 0.5;
     int k=100;
-    string graph_file=dataset+"graph_ic.inf";
-    
+    string graph_file = dataset + "graph_ic.inf";
+
+    unsigned long long start_estimate = getTime();
     TimGraph m(dataset, graph_file);
     m.k=k;
     m.setInfuModel(InfGraph::IC);
 
     double thelta = m.EstimateOPT(epsilon);
-    printf("thelta = %.2f\n", thelta);
+
+    unsigned long long end_estimate = getTime();
+    std::cout << "******Estimation Time = " << getInterval(start_estimate, end_estimate) << "ms." << endl;
+    //printf("thelta = %.2f\n", thelta);
  
-
-
-
-
-
-
-
-
+    int sample_nmb = (int) std::ceil(thelta);
 
 
 
@@ -45,27 +42,24 @@ int main() {
 
     graphStruct.readNodes("../../data/nodes.txt");
     graphStruct.readEdgeList("../../data/edges_with_prob.txt");
-//
-//    graphStruct.writeObjToFile("../../data/graph.dat");
-    //graphStruct.readObjFromFile("../../data/graph.dat");
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
     gpuMemManager.sortEdgesOnDev(GPUMemManager::reverseEdgeProcessing);
     gpuMemManager.setNodeListOnDev(1024, 256, GPUMemManager::reverseEdgeProcessing);
 
-    gpuMemManager.sortEdgesOnDev(GPUMemManager::normalEdgeProcessing);
-    gpuMemManager.setNodeListOnDev(1024, 256, GPUMemManager::normalEdgeProcessing);
-    graphStruct.cpyBackToHost(gpuMemManager.dev_nodeList_raw, gpuMemManager.dev_edgeList_raw);
+//    gpuMemManager.sortEdgesOnDev(GPUMemManager::normalEdgeProcessing);
+//    gpuMemManager.setNodeListOnDev(1024, 256, GPUMemManager::normalEdgeProcessing);
+//    graphStruct.cpyBackToHost(gpuMemManager.dev_nodeList_raw, gpuMemManager.dev_edgeList_raw);
 
     unsigned int maxGrid = 1024,  maxBlock = 512;
     gpuMemManager.init_randomStates(maxGrid, maxBlock);
 
     std::vector<uint32_t> init_bfs;
     std::vector<std::vector<uint32_t>> inter_nodes;
+    //graphStruct.readSamples("../../data/nodes.txt", init_bfs);
+    graphStruct.randSample(sample_nmb, init_bfs);
 
-    graphStruct.readSamples("../../data/nodes.txt", init_bfs);
-    //graphStruct.readSamples("../../data/testNodes.txt", init_bfs);
     int init_bfs_once = 512;//76ms
     //int init_bfs_once = 1024;//195ms
     //int init_bfs_once = 256;//31ms

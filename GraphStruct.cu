@@ -3,6 +3,7 @@
 //
 
 #include "GraphStruct.h"
+#include <stdlib.h>
 using namespace std;
 
 GraphStruct::~GraphStruct() {
@@ -172,4 +173,13 @@ void GraphStruct::readSamples(const char *filename, std::vector<uint32_t>& init_
 void GraphStruct::cpyBackToHost(uint32_t *nodeList_d, uint64_t *edgeList_d) {
     cudaMemcpy(this->allNodes, nodeList_d, sizeof(uint32_t) * this->nodesSize, cudaMemcpyDeviceToHost);
     cudaMemcpy(this->edgesList, edgeList_d, sizeof(uint64_t) * this->edgesListSize, cudaMemcpyDeviceToHost);
+}
+
+
+void GraphStruct::randSample(const int sample_nmb, std::vector<uint32_t> &init_bfs_nodes, unsigned int rand_init) {
+    srand(rand_init);
+    for (int i = 0; i < sample_nmb; ++i) {
+        uint32_t nodeId = rand() % this->nodesSize;
+        init_bfs_nodes.push_back(nodeId);
+    }
 }
