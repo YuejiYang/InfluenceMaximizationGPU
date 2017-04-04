@@ -27,7 +27,7 @@ find_package(CUDA REQUIRED)
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE ON)
 
 
-SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11 --expt-extended-lambda -gencode arch=compute_35,code=sm_35 -gencode arch=compute_52,code=sm_52 -lcurand -O3)
+SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}; -std=c++11 --expt-extended-lambda -gencode arch=compute_52,code=sm_52 -gencode arch=compute_61,code=sm_61 -lcurand -O3)
 
 set(SOURCE_FILES main.cpp
         GraphStruct.cu GraphStruct.h

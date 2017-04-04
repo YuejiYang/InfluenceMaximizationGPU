@@ -7,10 +7,12 @@ using namespace std;
 
 GraphStruct::~GraphStruct() {
     //free all pointers
+    free(this->allNodes_reverse);
     free(this->allNodes);
     free(this->edgesList);
     free(this->edgesProb);
     free(this->reverseEdgesList);
+    //
 }
 
 void GraphStruct::readEdgeList(const char *edgeFile){
@@ -164,4 +166,10 @@ void GraphStruct::readSamples(const char *filename, std::vector<uint32_t>& init_
     }
 
     ifs.close();
+}
+
+
+void GraphStruct::cpyBackToHost(uint32_t *nodeList_d, uint64_t *edgeList_d) {
+    cudaMemcpy(this->allNodes, nodeList_d, sizeof(uint32_t) * this->nodesSize, cudaMemcpyDeviceToHost);
+    cudaMemcpy(this->edgesList, edgeList_d, sizeof(uint64_t) * this->edgesListSize, cudaMemcpyDeviceToHost);
 }

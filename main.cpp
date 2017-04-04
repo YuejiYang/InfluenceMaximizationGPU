@@ -8,6 +8,7 @@
 
 
 int main() {
+    cudaSetDevice(1);
     //read files
     GraphStruct graphStruct = GraphStruct();
 
@@ -19,14 +20,18 @@ int main() {
 
     GPUMemManager gpuMemManager = GPUMemManager();
     gpuMemManager.initDeviceMem(graphStruct);
-    gpuMemManager.sortEdgesOnDev();
-    gpuMemManager.setNodeListOnDev(1024, 256);
+    gpuMemManager.sortEdgesOnDev(GPUMemManager::reverseEdgeProcessing);
+    gpuMemManager.setNodeListOnDev(1024, 256, GPUMemManager::reverseEdgeProcessing);
+
+    gpuMemManager.sortEdgesOnDev(GPUMemManager::normalEdgeProcessing);
+    gpuMemManager.setNodeListOnDev(1024, 256, GPUMemManager::normalEdgeProcessing);
+    graphStruct.cpyBackToHost(gpuMemManager.dev_nodeList_raw, gpuMemManager.dev_edgeList_raw);
+
     unsigned int maxGrid = 1024,  maxBlock = 512;
     gpuMemManager.init_randomStates(maxGrid, maxBlock);
 
     std::vector<uint32_t> init_bfs;
     std::vector<std::vector<uint32_t>> inter_nodes;
-
 
     graphStruct.readSamples("../../data/nodes.txt", init_bfs);
     //graphStruct.readSamples("../../data/testNodes.txt", init_bfs);
@@ -53,8 +58,8 @@ int main() {
                                    inter_nodes,
                                    gpuMemManager.nodeSize,
                                    gpuMemManager.edgeSize,
-                                   gpuMemManager.dev_nodeList_raw,
-                                   gpuMemManager.dev_edgeList_raw,
+                                   gpuMemManager.dev_nodeReverseList_raw,
+                                   gpuMemManager.dev_reverseEdgeList_raw,
                                    gpuMemManager.dev_edgeprob_raw,
                                    gpuMemManager.all_states,
                                    maxGrid,
