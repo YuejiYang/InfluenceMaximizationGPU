@@ -1,11 +1,12 @@
 #define HEAD_INFO
-#include "sfmt/SFMT.h"
-#include "head.h"
-#include "graph.h"
+#include "para_estimation/head.h"
+
+#include "para_estimation/sfmt/SFMT.h"
+#include "para_estimation/graph.h"
 
 int main(int argn, char ** argv)
 {
-    string dataset = "../data/epinions/";
+    string dataset = "data/epinions/";
     string model="IC";
     double epsilon=0.5;
     int k=100;
