@@ -33,7 +33,13 @@ set(SOURCE_FILES main.cpp
         GraphStruct.cu GraphStruct.h
         GPUKernels.cu GPUKernels.h
         GPUMemManager.cu GPUMemManager.h
-        GPUcBFS.cu GPUcBFS.h max_cover/MaxCover.h max_cover/MaxCover.cu)
+        GPUcBFS.cu GPUcBFS.h max_cover/MaxCover.h max_cover/MaxCover.cu
+        para_estimation/head.h
+        para_estimation/graph.h
+        para_estimation/infgraph.h
+        para_estimation/timgraph.h
+        para_estimation/sfmt/SFMT.h
+        para_estimation/sfmt/SFMT.c)
 
 cuda_add_executable(InfluenceMaximizationGPU ${SOURCE_FILES})
 
