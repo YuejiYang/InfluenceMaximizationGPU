@@ -34,7 +34,7 @@ public:
 
 public:
     GraphStruct() : nodesSize(0), allNodes(NULL),allNodes_reverse(NULL), edgesListSize(0), edgesList(NULL), reverseEdgesList(NULL), edgesProb(NULL) {}
-
+    GraphStruct(int nodeSize, int edgeSize);
     ~GraphStruct();
 
     void readEdgeList(const char* edgeFile);

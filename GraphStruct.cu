@@ -6,6 +6,14 @@
 #include <stdlib.h>
 using namespace std;
 
+
+GraphStruct::GraphStruct(int nodeSize, int edgeSize) {
+    this->nodesSize = (unsigned int)nodeSize;
+    this->edgesListSize = (unsigned int)edgeSize;
+    this->allNodes = (uint32_t*)malloc(this->nodesSize * sizeof(uint32_t));
+}
+
+
 GraphStruct::~GraphStruct() {
     //free all pointers
     free(this->allNodes_reverse);
@@ -81,6 +89,7 @@ void GraphStruct::readEdgeList(const char *edgeFile){
 }
 
 void GraphStruct::readNodes(const char *nodeFile) {
+    if (this->allNodes != NULL) return;
     ifstream ifs(nodeFile);
     if(!ifs.is_open()) {
         cout << "cannot open files" << endl;

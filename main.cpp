@@ -17,32 +17,27 @@ int main() {
 
     string dataset = "../../data/epinions1/";
     //string dataset = "../../data/slashdot/";
+    string graph_file = dataset + "graph_ic.inf";
     string model = "IC";
     double epsilon = 0.1;
     int k = 100;
-    string graph_file = dataset + "graph_ic.inf";
+
 
     unsigned long long start_estimate = getTime();
-    TimGraph m(dataset, graph_file);
-    m.k = k;
-    m.setInfuModel(InfGraph::IC);
+    TimGraph timGraph(dataset, graph_file);
+    timGraph.k = k;
+    timGraph.setInfuModel(InfGraph::IC);
 
-    double thelta = m.EstimateOPT(epsilon);
+    double thelta = timGraph.EstimateOPT(epsilon);
     int sample_nmb = (int) std::ceil(thelta);
     unsigned long long end_estimate = getTime();
     std::cout << "******Estimation Time = " << getInterval(start_estimate, end_estimate) << "ms." << endl;
     std::cout << "sample number = " << sample_nmb << std::endl;
 
+    GraphStruct graphStruct = GraphStruct(timGraph.n, timGraph.m);
+    graphStruct.readEdgeList(graph_file.c_str());
 
-
-
-    GraphStruct graphStruct = GraphStruct();
-
-    graphStruct.readNodes("../../data/epinions1_nodes_after_reduce.txt");
-    graphStruct.readEdgeList("../../data/epinions1_edges_after_reduce.txt");
-
-//    graphStruct.readNodes("../../data/slashdot_nodes_after_reduce.txt");
-//    graphStruct.readEdgeList("../../data/slashdot_edges_after_reduce.txt");
+//    graphStruct.readEdgeList(graph_file.c_str());
 
 
     GPUMemManager gpuMemManager = GPUMemManager();
