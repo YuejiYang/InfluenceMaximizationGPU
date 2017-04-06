@@ -10,3 +10,5 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 data/*
+data/epinions/*
+build/
