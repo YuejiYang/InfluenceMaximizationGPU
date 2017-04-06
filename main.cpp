@@ -15,7 +15,7 @@ int main() {
     cudaSetDevice(0);
     //read files
 
-    string dataset = "../../data/epinions/";
+    string dataset = "../../data/epinions1/";
     //string dataset = "../../data/slashdot/";
     string model = "IC";
     double epsilon = 0.1;
