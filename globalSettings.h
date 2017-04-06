@@ -5,7 +5,7 @@
 #ifndef INFLUENCEMAXIMIZATIONGPU_GLOBALSETTINGS_H
 #define INFLUENCEMAXIMIZATIONGPU_GLOBALSETTINGS_H
 
-#define PROB_SCALE 200 //from 0.0 ~ 1.0 scale to this range
+#define PROB_SCALE 100 //from 0.0 ~ 1.0 scale to this range
 #define TOPK 100
 
 

@@ -58,7 +58,6 @@ std::vector<unsigned> maxCoverGreedy(std::vector<std::vector<unsigned> > &sets, 
 	unordered_map<unsigned, unsigned> firstElem;
 	unordered_map<unsigned, unordered_set<unsigned> > vecSets;
 
-	cout << "transform\n";
 	transformSets(sets, nextElem, firstElem, vecSets);
 
 
