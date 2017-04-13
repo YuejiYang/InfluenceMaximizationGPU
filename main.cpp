@@ -91,5 +91,8 @@ int main() {
     unsigned long long et2 = getTime();
     std::cout << "******100-Max cover = " << getInterval(st2, et2) << "ms. " << std::endl;
 
+    int appInfluence = getAppInfluence(res, inter_nodes);
+    std::cout << "influence: " << appInfluence << std::endl;
+
     return 0;
 }

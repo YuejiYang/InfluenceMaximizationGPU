@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include <iostream>
-
+#include <cassert>
 
 using namespace std;
 
@@ -93,9 +93,24 @@ std::vector<unsigned> maxCoverGreedy(std::vector<std::vector<unsigned> > &sets, 
 			}
 		}
 
-		results.push_back(roots[max_set.second]);
+		results.push_back(max_set.second);
 		vecSets.erase((max_set.second));
 	}
 
 	return results;
+}
+
+
+int getAppInfluence(std::vector<unsigned> &results, std::vector<std::vector<unsigned> > &sets)
+{
+	unordered_set<unsigned> idxSet;
+//	std::cout << "setsize:" << sets.size() << std::endl;
+	for(auto r:results){
+//		std::cout << "r:" << r << std::endl;
+		assert(r<sets.size());
+		for(auto s:sets[r]){
+			idxSet.insert(s);
+		}
+	}
+	return idxSet.size();
 }
